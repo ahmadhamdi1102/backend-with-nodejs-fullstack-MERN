@@ -1,6 +1,18 @@
 const express = require("express");
 const router = express.Router();
 const Post = require("../models/Post");
+const verify = require("./verifyToken");
+const User = require("../models/User");
+
+//getUser Login
+router.get("/user", verify, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    res.json(user);
+  } catch (err) {
+    res.json({ message: err });
+  }
+});
 
 //get all post
 router.get("/", async (req, res) => {
@@ -38,31 +50,26 @@ router.get("/:postId", async (req, res) => {
 });
 
 //update post
-router.patch('/:postId', async (req, res) => {
-    try{
-        const updatePost = await Post.updateOne({
-            { _id : req.params.postId },
-            {
-                $set : {
-                    title : req.body.title
-                }
-            }
-        });
-        res.json(updatePost);
-    } catch (err){
-        res.json({message : err });
-    }
+router.patch("/:postId", async (req, res) => {
+  try {
+    const updatePost = await Post.updateOne(
+      { _id: req.params.postId },
+      { $set: { title: req.body.title } }
+    );
+    res.json(updatePost);
+  } catch (err) {
+    res.json({ message: err });
+  }
 });
 
 //delete post
 router.delete("/:postId", async (req, res) => {
-    try {
-      const removedPost = await Post.remove(_id : req.params.postId);
-      res.json(removedPost);
-    } catch (err) {
-      res.json({ message: err });
-    }
-  });
-  
+  try {
+    const removedPost = await Post.remove({ _id: req.params.postId });
+    res.json(removedPost);
+  } catch (err) {
+    res.json({ message: err });
+  }
+});
 
 module.exports = router;
